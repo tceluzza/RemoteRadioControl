@@ -21,11 +21,12 @@ IC-7300 to controller
 
 ## Knob-based controls
 * VFO Control
-    1. Read operating frequency: Cn `03`^
-    2. Set operating frequency: Cn `05`^
+    1. Read operating frequency: Cn `03` (see below for data)
+    2. Set operating frequency: Cn `05` (see below for data)
     3. Read/Set selected/unselected VFO:
         * Cn `25`
         * Sc `00` for selected VFO, `01` for unselected VFO
+        * Data: see below
 * filter width
     * Cn `1A`
     * Sc `03`
@@ -38,8 +39,9 @@ IC-7300 to controller
 ## Button-based controls
 * mode
     * I might wait to implement this. This will probably be CW-only to start.
-    1. Read operating mode: Cn `04`^^
-    2. Set operating mode: Cn `06`^^
+    1. Read operating mode: Cn `04` (see below for data)
+    2. Set operating mode: Cn `06` (see below for data)
+    3. Set/read operating mode for (un)selected VFO: Cn `26`
 * band
     * I will probably just hard-code some frequencies in and use Cn `05` to jump to that rather than use the band-stacking register
 * QSK
@@ -57,7 +59,7 @@ IC-7300 to controller
     * Handled in software
 
 
-^ Operating frequency data content
+### Operating frequency data content
 * 5 bytes of data
 * Each nibble is 0-9 (little-endian packed binary-coded decimal/BCD):
     1. 10 Hz & 1 Hz
@@ -67,7 +69,7 @@ IC-7300 to controller
     5. 1 GHz & 100 MHz (always `00` for the IC-7300)
 * e.g. 14,074.512 kHz: `12 45 07 14 00`
 
-^^ Mode data content
+### Mode data content
 * 2 bytes of data
     1. Operating mode
         
