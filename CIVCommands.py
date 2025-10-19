@@ -229,7 +229,7 @@ class CIVCommandSet:
             raw = self.civ.send_and_receive(cmd["Cn"], cmd["Sc"], data_bytes)
             # If radio replied with a single-byte status (e.g., 0xFB OK / 0xFA NG) return it directly
             if raw and len(raw) == 1:
-                return raw
+                return raw.hex().upper()
         else:
             # read
             raw = self.civ.send_and_receive(cmd["Cn"], cmd["Sc"])
@@ -263,5 +263,4 @@ if __name__ == "__main__":
     # Set power to 75%
     print(cmdset.send_command_by_name("POWER_OUTPUT", 75))
     
-
     radio.close()
