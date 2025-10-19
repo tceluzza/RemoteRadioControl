@@ -104,6 +104,7 @@ class CIVSerial:
         -------
         bytes
             The data portion of the CI-V response (after command and subcommand),
+            or a single-byte status (0xFB OK / 0xFA NG) if the radio replies with that,
             or an empty bytes object if no valid response is received.
         """
         start_time = time.time()
@@ -126,9 +127,16 @@ class CIVSerial:
             if to_addr == self.CONTROLLER_ADDR and from_addr == self.radio_addr:
                 # Strip off preamble, TO, FROM, and trailing EOM
                 body = frame[4:-1]
+
+                # If the radio replied with a single status byte (e.g., 0xFB OK / 0xFA NG), return it.
+                if len(body) == 1:
+                    return body
+
+                # Normal response includes at least CN + SC followed by data.
                 if len(body) < 2:
                     return b""
-                # Remove command + subcommand (first 2 bytes)
+
+                # Remove command + subcommand (first 2 bytes) and return remaining data
                 return body[2:]
 
             if time.time() - start_time > 2.0:
