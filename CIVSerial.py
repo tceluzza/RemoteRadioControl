@@ -140,6 +140,7 @@ class CIVSerial:
                 return body[2:]
 
             if time.time() - start_time > 2.0:
+                print("no")
                 break
 
         return b""
@@ -163,7 +164,9 @@ class CIVSerial:
         bytes
             The received response frame.
         """
+        print("sar")
         self.send_command(command, subcommand, data)
+        print("red")
         return self.receive_response()
 
     def close(self) -> None:
