@@ -45,11 +45,25 @@ def run_server():
     while True:
       logging.debug("Waiting for a command...")
       data, address = sock.recvfrom(4096)
-      command = data.decode().strip().upper()
-      logging.debug(f"Received command '{command}' from {address}")
+      instruction = data.decode().strip().upper()
+      logging.debug(f"Received instruction '{instruction}' from {address}")
 
-      logging.debug(f"Sending command to radio: {command}")
-      resp = cmdset.send_command_by_name(command)
+      commands = instruction.split(" ")
+      match len(commands):
+        case 1:
+          cmd = commands[0]
+          data = None
+        case 2:
+          cmd = commands[0]
+          data = commands[1]
+        case _:
+          logging.warning("Invalid command format received.")
+          sock.sendto(str("Invalid").encode(), address)
+          continue
+        
+    
+      logging.debug(f"Sending command {commands[0]} to radio with data {commands[1]}")
+      resp = cmdset.send_command_by_name(cmd, data)
       
       logging.debug(f"received resp from radio: {resp}")
       logging.debug(f"Sending response to UDP Client: {resp}")

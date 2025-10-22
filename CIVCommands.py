@@ -216,14 +216,12 @@ class CIVCommandSet:
         If `data` is None or empty, a READ is performed (no data bytes).
         If `data` is provided, it will be encoded and sent as WRITE payload.
         """
-        print("enter")
         if name not in self.commands:
             raise KeyError(f"Command '{name}' not found in command set.")
 
         cmd = self.commands[name]
         # Prepare data bytes if provided
         data_bytes = self._process_request_data(name, data)
-        print(f'cmd: {cmd}')
         # If data_bytes is empty => READ, otherwise WRITE (include data)
         if data_bytes:
             # send_with_data; assume CIVSerial.send_and_receive accepts optional data param
@@ -233,10 +231,7 @@ class CIVCommandSet:
                 return raw.hex().upper()
         else:
             # read
-            print("reading")
-
             raw = self.civ.send_and_receive(cmd["Cn"], cmd["Sc"])
-            print(raw)
         return self._process_response(name, raw)
 
 if __name__ == "__main__":
