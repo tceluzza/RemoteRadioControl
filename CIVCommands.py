@@ -73,7 +73,7 @@ class CIVCommandSet:
                 return None
             bcd_value = self._bcd_to_int_le(data)
             # Map 0–31 → 50–2700 Hz
-            freq_hz = 50 + round((bcd_value / 31) * (2700 - 50) / 100) * 100
+            freq_hz = 50 + round((bcd_value / 31) * (2700 - 50) / 10) * 10
             return freq_hz
 
         elif name == "MODE":
