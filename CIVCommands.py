@@ -31,6 +31,7 @@ class CIVCommandSet:
             "POWER_OUTPUT": {"Cn": b"\x14", "Sc": b"\x0A"},
             "MODE": {"Cn": b"\x26", "Sc": b"\x00"},
             "QSK": {"Cn": b"\x16", "Sc": b"\x47"},
+            "TUNE": {"Cn": b"\x1C", "Sc": b"\x01"},
         }
 
     def _bcd_to_int_le(self, bcd_bytes: bytes) -> int:
@@ -73,8 +74,8 @@ class CIVCommandSet:
                 return None
             bcd_value = self._bcd_to_int_le(data)
             # Map 0–31 → 50–2700 Hz
-            freq_hz = 50 + round((bcd_value / 31) * (2700 - 50) / 10) * 10
-            return freq_hz
+            #freq_hz = 50 + round((bcd_value / 31) * (2700 - 50) / 10) * 10
+            return bcd_value
 
         elif name == "MODE":
             if not data:
@@ -129,21 +130,23 @@ class CIVCommandSet:
         low = ((int(s[2]) & 0xF) << 4) | (int(s[3]) & 0xF)
         return bytes([high, low])
 
-    def _filter_width_to_bcd(self, hz: int) -> bytes:
+    def _filter_width_to_bcd(self, width: int) -> bytes:
         """
-        Encode a filter width in Hz into the single-byte BCD index the code expects.
+        Encode a filter width from 0 to 31 into the single-byte BCD index the code expects.
         Inverse of the read mapping (approximate).
         """
-        if hz is None:
+        if width is None:
             return b""
-        hz = int(hz)
-        min_hz, max_hz = 50, 2700
-        proportion = (hz - min_hz) / (max_hz - min_hz)
-        proportion = max(0.0, min(1.0, proportion))
-        idx = round(proportion * 31)  # 0..31
+        width = int(width)
+        # min_hz, max_hz = 50, 2700
+        # proportion = (width - min_hz) / (max_hz - min_hz)
+        # proportion = max(0.0, min(1.0, proportion))
+        # idx = round(proportion * 31)  # 0..31
         # represent as a single BCD byte like 0x00..0x31
-        tens = idx // 10
-        ones = idx % 10
+        # tens = idx // 10
+        # ones = idx % 10
+        tens = width // 10
+        ones = width % 10
         return bytes([((tens & 0xF) << 4) | (ones & 0xF)])
 
     def _encode_mode(self, mode) -> bytes:
@@ -181,6 +184,11 @@ class CIVCommandSet:
         - If data is None or empty, return b'' (a read).
         - Otherwise encode appropriately per command.
         """
+
+        if name == "TUNE":
+            # set to 02 to set tuning
+            return b"\x02"
+        
         if data is None or (isinstance(data, (bytes, bytearray)) and len(data) == 0) or data == "":
             return b""
 

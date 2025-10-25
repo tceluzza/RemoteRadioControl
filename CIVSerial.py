@@ -58,6 +58,11 @@ class CIVSerial:
             #stopbits=serial.STOPBITS_TWO,
             timeout=1.0
         )
+        
+        self.ser.dtr = False
+
+    def setDTR(self, state: bool) -> None:
+        self.ser.dtr = state
 
     def send_command(self, command: bytes, subcommand: bytes = b"", data: bytes = b"") -> None:
         """

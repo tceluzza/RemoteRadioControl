@@ -19,7 +19,7 @@ def run_server():
   """Runs the UDP server."""
   # Configure logging
   logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - [%(levelname)s] - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
   )
@@ -54,6 +54,18 @@ def run_server():
 
       instruction = data.decode().strip().upper()
       logging.info(f"Received instruction '{instruction}' from {address}")
+
+      if (instruction == "KEYDOWN"):
+        logging.debug(f"Setting key down")
+        radio.setDTR(True)
+        sock.sendto(str("FB").encode(), address)
+        continue
+      elif (instruction == "KEYUP"):
+        logging.debug(f"Setting key up")
+        radio.setDTR(False)
+        sock.sendto(str("FB").encode(), address)
+        continue
+
 
       commands = instruction.split(" ")
       match len(commands):
